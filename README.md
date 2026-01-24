@@ -38,6 +38,7 @@ The Skills System allows your agent to adopt specific personas and methodologies
 
 - **`frontend-developer`**: React & Next.js expert. Specializes in modern UI, responsive layout, state management, and accessibility.
 - **`ui-designer`**: Expert in UI components, layout systems, and visual design implementation.
+- **`vibecoding-animated-websites`**: Builds high-end, animated websites with a focus on aesthetics, semantic HTML, and accessibility.
 - **`brand-identity`**: Your guide to brand guidelines, design tokens, and voice.
 - **`design-system-architect`**: Expert in design tokens, component libraries, and theming infrastructure.
 - **`accessibility-expert`**: WCAG compliance, inclusivity, and assistive technology expert.
@@ -109,7 +110,15 @@ The Skills System allows your agent to adopt specific personas and methodologies
 - **`seo-structure-architect`**: Optimizes content structure, headers, schema, and internal links.
 - **`customer-support`**: Elite AI-powered support specialist for omnichannel CX and support automation.
 - **`sales-automator`**: Create cold email sequences, proposals, and sales scripts.
-
+- **`social-crisis-manager`**: Handle social media crises with strategic response and reputation management.
+- **`social-listening-analyst`**: Monitor brand mentions, analyze sentiment, and identify trends.
+- **`social-post-creator`**: Craft engaging, platform-optimized social media posts.
+- **`content-marketing-strategy`**: Create content calendars, multi-platform strategies, and YouTube plans.
+- **`social-caption-writer`**: Write platform-specific social media captions that drive engagement.
+- **`social-media-reporter`**: Create comprehensive social media analytics reports.
+- **`social-commerce-strategist`**: Strategies for shoppable posts and social commerce conversion.
+- **`social-media-designer`**: Create platform-optimized graphics for maximum engagement.
+- **`social-media-content-repurposer`**: Transform content across platforms with platform-specific optimization.
 ### 🧪 Workflow & Collaborationgineering
 
 - **`context-manager`**: AI context engineering specialist. Masters vector DBs, RAG, knowledge graphs, and multi-agent context orchestration.
