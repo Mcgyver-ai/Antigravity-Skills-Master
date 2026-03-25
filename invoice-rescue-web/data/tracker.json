@@ -1,0 +1,26 @@
+[
+  {
+    "id": "inv-001",
+    "client_name": "Acme Corp",
+    "amount": 1500,
+    "due_date": "2026-03-25",
+    "status": "Due Soon",
+    "last_action_date": "2026-03-20"
+  },
+  {
+    "id": "inv-002",
+    "client_name": "Globex Inc",
+    "amount": 3200.5,
+    "due_date": "2026-03-10",
+    "status": "Action Required",
+    "last_action_date": "2026-03-24"
+  },
+  {
+    "id": "inv-003",
+    "client_name": "Initech",
+    "amount": 450,
+    "due_date": "2026-04-15",
+    "status": "Pending",
+    "last_action_date": "2026-03-24"
+  }
+]

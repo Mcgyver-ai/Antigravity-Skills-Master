@@ -2,7 +2,9 @@
 
 A comprehensive collection of specialized skills to supercharge your Antigravity agent's capabilities. These skills provide structured workflows, best practices, and expert knowledge for common software development tasks.
 
-> **Inspired by** [Superpowers](https://github.com/obra/superpowers) and [Claude Code Plugins](https://github.com/wshobson/agents).
+> **Inspired by**
+
+[Superpowers](https://github.com/obra/superpowers) and [Claude Code Plugins](https://github.com/wshobson/agents).
 
 ## Overview
 
@@ -56,9 +58,9 @@ The Skills System allows your agent to adopt specific personas and methodologies
 - **`debugger`**: First responder for any error, test failure, or unexpected behavior.
 - **`systematic-debugging`**: Use when encountering bugs - systematic root cause investigation before fixes.
 - **`debugging-strategies`**: Master systematic debugging techniques and root cause analysis.
-    - Scientific method application (Hypothesize → Experiment → Analyze).
-    - Language-specific debugging tools (JS/TS, Python, Go).
-    - Advanced techniques like binary search and differential debugging.
+Scientific method application (Hypothesize → Experiment → Analyze).
+Language-specific debugging tools (JS/TS, Python, Go).
+Advanced techniques like binary search and differential debugging.
 - **`error-handling-patterns`**: Best practices for writing resilient code. Covers exception handling, Result types, and error propagation patterns.
 - **`code-reviewer`**: Review code for best practices, security, and maintainability.
 - **`backend-security-coder`**: Implement secure coding practices for backend systems.
@@ -119,6 +121,7 @@ The Skills System allows your agent to adopt specific personas and methodologies
 - **`social-commerce-strategist`**: Strategies for shoppable posts and social commerce conversion.
 - **`social-media-designer`**: Create platform-optimized graphics for maximum engagement.
 - **`social-media-content-repurposer`**: Transform content across platforms with platform-specific optimization.
+
 ### 🧪 Workflow & Collaborationgineering
 
 - **`context-manager`**: AI context engineering specialist. Masters vector DBs, RAG, knowledge graphs, and multi-agent context orchestration.
@@ -129,10 +132,10 @@ The Skills System allows your agent to adopt specific personas and methodologies
 - **`performance-engineer`**: Optimize applications and infrastructure for speed and scalability.
 - **`sql-optimization-patterns`**: Expert in optimizing SQL queries and database performance.
 - **`sql-pro`**: Master modern SQL, cloud-native DBs, and advanced query optimization. Use this for:
-    - Analyzing `EXPLAIN` plans.
-    - Designing efficient indexes.
-    - Resolving N+1 query problems.
-    - Optimizing database interactions.
+- Analyzing `EXPLAIN` plans.
+- Designing efficient indexes.
+- Resolving N+1 query problems.
+- Optimizing database interactions.
 - **`database-optimizer`**: Expert in modern database tuning, query optimization, indexing, caching, and scalable architectures.
 - **`c-pro`**: Write efficient C code with proper memory management and system calls.
 - **`cpp-pro`**: Write idiomatic C++ with modern features, RAII, and STL.
@@ -148,9 +151,7 @@ Simply ask your agent to use a specific skill. The agent has access to all skill
 **Examples:**
 
 > "Use the **planning** skill to create an implementation plan for the user authentication feature."
-
 > "I have a slow query. Use the **sql-optimization-patterns** skill to help me analyze it."
-
 > "Review my latest changes using the **code-reviewer** skill."
 
 ## Architecture
@@ -165,11 +166,13 @@ Each skill is a self-contained directory in `.agent/skills/<skill-name>/` contai
 
 To create a new skill, use the **Gemini Skill Creator**:
 
-1.  Ask the agent: "I want to create a new skill for [topic]."
-2.  The agent will use the `creating-skills` skill to guide you through generating the directory structure and `SKILL.md`.
+    Ask the agent: "I want to create a new skill for [topic]."
+    The agent will use the `creating-skills` skill to guide you through generating the directory structure and `SKILL.md`.
 
 ## Credits
 
 This system is heavily inspired by and adapted from:
+
 - **[Superpowers](https://github.com/obra/superpowers)** by Jesse Vincent
+- **[Claude Code Plugins](https://github.com/wshobson/agents)** by wshobson
 - **[Claude Code Agents](https://github.com/wshobson/agents)** by wshobson
