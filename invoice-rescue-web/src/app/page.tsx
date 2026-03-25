@@ -16,6 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 interface Invoice {
   id: string;
@@ -84,6 +85,7 @@ export default async function Dashboard() {
                 <TableHead>Status</TableHead>
                 <TableHead>Due Date</TableHead>
                 <TableHead className="text-right">Last Action</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -114,6 +116,17 @@ export default async function Dashboard() {
                     </TableCell>
                     <TableCell className="text-right whitespace-nowrap">
                       {invoice.last_action_date}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {["Paid", "Pending"].includes(invoice.status) ? (
+                        <Button variant="secondary" size="sm">
+                          View
+                        </Button>
+                      ) : (
+                        <Button variant="default" size="sm">
+                          Draft Reminder
+                        </Button>
+                      )}
                     </TableCell>
                   </TableRow>
                 );
