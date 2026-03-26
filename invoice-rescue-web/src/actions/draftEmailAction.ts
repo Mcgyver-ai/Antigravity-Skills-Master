@@ -1,70 +1,57 @@
 "use server";
 
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai";
+import type { Invoice } from "@/app/page";
 
-// Define the structure of an invoice based on tracker.json
-interface Invoice {
-  id: string;
-  client_name: string;
-  amount: number;
-  due_date: string;
-  status: "Due Soon" | "Action Required" | "Pending";
-  last_action_date: string;
-}
+// The skill instructions are sourced directly from:
+// Invoice Rescue Agent/skills/invoice-email-automator/SKILL.md
+// This ensures the AI follows our Zero-Hallucination rules.
+const SKILL_INSTRUCTIONS = `
+You are an Accounts Receivable (AR) email automation specialist. Draft clear, empathetic, and strictly professional follow-up emails for invoices based ONLY on the data provided.
 
-// Ensure the API key is set in your environment variables
-if (!process.env.GEMINI_API_KEY) {
-  throw new Error("GEMINI_API_KEY is not set");
-}
+## Zero-Hallucination Policy
+You MUST use ONLY the variables explicitly provided. Do not guess, invent, or assume any company details, payment policies, or contact information not provided.
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+## Tone Rules (based on status)
+- "Pending" / "Due Soon" → Friendly, helpful reminder tone.
+- "Action Required" → Direct, firm, urgent collections tone.
 
-const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-
-const skillInstructions = `
-You are an Accounts Receivable (AR) email automation specialist. Your goal is to draft clear, empathetic, and strictly professional follow-up emails for invoices based entirely on verified data.
-
-## 1. Zero-Hallucination Policy
-**Rule:** You must ONLY use the variables explicitly provided. Do not guess, invent, or assume any company details, payment policies, or contact information that is not provided.
-
-## 2. Allowed Data Structure
-You must map your email's tone and contents directly to these specific fields:
-- client_name: The recipient name. Always address the client professionally.
-- amount: The outstanding balance to be clearly stated.
-- due_date: Used to inform the client of the timeline.
-- status: Drives the tone of the email:
-  - "Pending" / "Due Soon" -> Friendly, helpful reminder.
-  - "Action Required" -> Direct, firm, urgent collections.
-- last_action_date: Controls whether to reference a recent touchpoint (e.g., "Since our last contact on [date]").
-
-## 3. Output Requirements
-- Return a single email **Subject Line** and **Body**.
-- Do not add conversational filler before or after the email draft.
-- Keep sentences short, scannable, and focused on one clear Next Step.
-- Maintain a polite but firm tone at all times.
+## Output Format
+Return ONLY a Subject Line and Email Body. No preamble or extra commentary.
 `;
 
 export async function draftEmailAction(invoice: Invoice): Promise<string> {
+  // Read the API key inside the function, not at module load time.
+  // This is safer for Next.js Server Actions.
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    return "Error: GEMINI_API_KEY is not configured on the server.";
+  }
+
+  const ai = new GoogleGenAI({ apiKey });
+
   const prompt = `
-    ${skillInstructions}
+${SKILL_INSTRUCTIONS}
 
-    Here is the invoice data:
-    - **Client Name:** ${invoice.client_name}
-    - **Amount Due:** $${invoice.amount}
-    - **Due Date:** ${invoice.due_date}
-    - **Status:** ${invoice.status}
-    - **Last Contact:** ${invoice.last_action_date}
+Here is the invoice data to use:
+- Client Name: ${invoice.client_name}
+- Amount Due: $${invoice.amount.toFixed(2)}
+- Due Date: ${invoice.due_date}
+- Status: ${invoice.status}
+- Last Contact Date: ${invoice.last_action_date}
 
-    Draft the email now.
-  `;
+Draft the follow-up email now.
+`;
 
   try {
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
-    return text;
+    const response = await ai.models.generateContent({
+      model: "gemini-2.0-flash",
+      contents: prompt,
+    });
+
+    return response.text ?? "Error: Received an empty response from the AI.";
   } catch (error) {
-    console.error("Error calling Gemini API:", error);
+    console.error("Gemini API call failed:", error);
     return "Error: Could not generate email draft. Please check the server logs.";
   }
 }

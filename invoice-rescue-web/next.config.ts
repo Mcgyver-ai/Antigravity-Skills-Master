@@ -5,7 +5,12 @@ const nextConfig: NextConfig = {
   reactCompiler: true,
   reactStrictMode: true,
   images: {
-    domains: ["example.com"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "example.com",
+      },
+    ],
   },
   webpack: (config, { isServer }) => {
     if (!isServer) {

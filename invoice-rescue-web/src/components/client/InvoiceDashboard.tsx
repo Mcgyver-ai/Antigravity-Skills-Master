@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import {
   Table,
   TableBody,
@@ -19,6 +19,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { Loader2 } from "lucide-react";
 import { draftEmailAction } from "@/actions/draftEmailAction";
 import type { Invoice } from "@/app/page";
 import { getBadgeVariant } from "@/app/page";
@@ -28,26 +29,24 @@ interface InvoiceDashboardProps {
 }
 
 export function InvoiceDashboard({ invoices }: InvoiceDashboardProps) {
+  // useTransition gives us an isPending flag without blocking the UI
+  const [isPending, startTransition] = useTransition();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [generatedEmail, setGeneratedEmail] = useState("");
 
-  const handleDraftClick = async (invoice: Invoice) => {
+  const handleDraftClick = (invoice: Invoice) => {
+    // Reset state and open the dialog immediately so the user sees it open
     setSelectedInvoice(invoice);
+    setGeneratedEmail("");
     setIsDialogOpen(true);
-    setIsLoading(true);
-    setGeneratedEmail(""); // Clear previous content
 
-    try {
+    // startTransition marks the server action call as non-urgent,
+    // keeping the UI interactive while we wait for the AI response.
+    startTransition(async () => {
       const draft = await draftEmailAction(invoice);
       setGeneratedEmail(draft);
-    } catch (error) {
-      console.error("Failed to draft email:", error);
-      setGeneratedEmail("Failed to generate email. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
+    });
   };
 
   return (
@@ -66,8 +65,8 @@ export function InvoiceDashboard({ invoices }: InvoiceDashboardProps) {
         <TableBody>
           {invoices.map((invoice) => (
             <TableRow key={invoice.id}>
-              <TableCell>{invoice.id}</TableCell>
-              <TableCell>{invoice.client_name}</TableCell>
+              <TableCell className="font-mono text-xs">{invoice.id}</TableCell>
+              <TableCell className="font-medium">{invoice.client_name}</TableCell>
               <TableCell>${invoice.amount.toFixed(2)}</TableCell>
               <TableCell>{invoice.due_date}</TableCell>
               <TableCell>
@@ -76,7 +75,11 @@ export function InvoiceDashboard({ invoices }: InvoiceDashboardProps) {
                 </Badge>
               </TableCell>
               <TableCell>
-                <Button onClick={() => handleDraftClick(invoice)}>
+                <Button
+                  size="sm"
+                  onClick={() => handleDraftClick(invoice)}
+                  disabled={isPending}
+                >
                   Draft Reminder
                 </Button>
               </TableCell>
@@ -86,22 +89,37 @@ export function InvoiceDashboard({ invoices }: InvoiceDashboardProps) {
       </Table>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>
-              {isLoading ? "Drafting Email..." : `Reminder for ${selectedInvoice?.client_name}`}
+              {isPending
+                ? "Drafting email..."
+                : `Reminder for ${selectedInvoice?.client_name}`}
             </DialogTitle>
             <DialogDescription>
-              AI-generated draft for invoice {selectedInvoice?.id}. Review and send.
+              {isPending
+                ? "Gemini is writing your email. One moment..."
+                : `AI draft for invoice ${selectedInvoice?.id}. Review before sending.`}
             </DialogDescription>
           </DialogHeader>
-          {isLoading ? (
-            <div className="p-4 text-center">Loading...</div>
+
+          {/* Loading state with a spinner */}
+          {isPending ? (
+            <div className="flex items-center justify-center py-10 gap-3 text-muted-foreground">
+              <Loader2 className="animate-spin h-5 w-5" />
+              <span>Contacting Gemini AI...</span>
+            </div>
           ) : (
-            <div className="p-4 whitespace-pre-wrap">{generatedEmail}</div>
+            // Email body displayed in a scrollable, pre-formatted box
+            <div className="max-h-80 overflow-y-auto rounded-md bg-muted p-4 text-sm whitespace-pre-wrap font-mono">
+              {generatedEmail}
+            </div>
           )}
+
           <DialogFooter>
-            <Button onClick={() => setIsDialogOpen(false)}>Close</Button>
+            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+              Close
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
