@@ -1,5 +1,6 @@
-import fs from "fs";
-import path from "path";
+
+import { promises as fs } from 'fs';
+import path from 'path';
 import {
   Card,
   CardContent,
@@ -7,34 +8,56 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { InvoiceTable, Invoice } from "@/components/invoice-table";
 
-export default async function Dashboard() {
-  // Read tracker.json dummy data safely from the filesystem during server render
-  const dataPath = path.join(process.cwd(), "data", "tracker.json");
-  const fileContents = fs.readFileSync(dataPath, "utf8");
-  const invoices: Invoice[] = JSON.parse(fileContents);
+import { InvoiceDashboard } from '@/components/client/InvoiceDashboard';
 
-  const totalOutstanding = invoices.reduce((sum, inv) => sum + inv.amount, 0);
+// Define the structure of an invoice based on tracker.json
+export interface Invoice {
+  id: string;
+  client_name: string;
+  amount: number;
+  due_date: string;
+  status: "Due Soon" | "Action Required" | "Pending";
+  last_action_date: string;
+}
+
+// Helper to determine badge variant based on status
+export const getBadgeVariant = (status: Invoice['status']): 'default' | 'secondary' | 'destructive' | 'outline' => {
+  switch (status) {
+    case 'Due Soon':
+      return 'secondary';
+    case 'Action Required':
+      return 'destructive';
+    case 'Pending':
+    default:
+      return 'outline';
+  }
+};
+
+// The main page component (Server Component)
+export default async function InvoiceRescuePage() {
+  // 1. Read data from tracker.json
+  const filePath = path.join(process.cwd(), 'data', 'tracker.json');
+  let invoices: Invoice[] = [];
+  try {
+    const fileContents = await fs.readFile(filePath, 'utf8');
+    invoices = JSON.parse(fileContents);
+  } catch (error) {
+    console.error("Failed to read or parse invoice data:", error);
+    // Render an error state or an empty table
+  }
 
   return (
-    <div className="container mx-auto max-w-5xl py-12 px-4">
+    <div className="container mx-auto p-4">
       <Card>
         <CardHeader>
-          <CardTitle className="text-3xl font-bold tracking-tight">
-            Invoice Rescue Dashboard
-          </CardTitle>
+          <CardTitle>Invoice Rescue Dashboard</CardTitle>
           <CardDescription>
-            You have {invoices.length} active invoices totalling{" "}
-            {new Intl.NumberFormat("en-US", {
-              style: "currency",
-              currency: "USD",
-            }).format(totalOutstanding)}
-            .
+            Manage outstanding invoices and draft follow-up reminders.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <InvoiceTable invoices={invoices} />
+          <InvoiceDashboard invoices={invoices} />
         </CardContent>
       </Card>
     </div>
